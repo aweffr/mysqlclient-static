@@ -1,0 +1,18 @@
+ARG PYTHON_VERSION=3.12
+FROM ghcr.io/astral-sh/uv:0.13.5 AS uv
+FROM python:${PYTHON_VERSION}-slim-bookworm
+COPY --from=uv /uv /usr/local/bin/uv
+ARG PYTHON_TARGET=3.12
+ARG WHEEL
+ARG CRYPTOGRAPHY=cryptography==46.0.3
+RUN uv venv --seed --python "${PYTHON_TARGET}" /opt/runtime
+ENV PATH="/opt/runtime/bin:${PATH}"
+COPY wheelhouse/ /tmp/wheels/
+RUN python -m pip install --no-cache-dir --only-binary=:all: "/tmp/wheels/${WHEEL}" "${CRYPTOGRAPHY}" \
+    && python -m pip check \
+    && rm -rf /tmp/wheels \
+    && ! command -v gcc \
+    && ! command -v mysql
+ENV PYTHONUNBUFFERED=1 PYTHONFAULTHANDLER=1 PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/repo/tests/app:/repo DJANGO_SETTINGS_MODULE=webapp.settings
+WORKDIR /repo/tests/app

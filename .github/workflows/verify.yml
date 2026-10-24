@@ -1,0 +1,99 @@
+name: Build and verify
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+  workflow_call:
+  schedule:
+    - cron: '17 3 1 * *'
+
+permissions:
+  contents: read
+
+jobs:
+  linux:
+    name: Linux AMD64 · 7 wheels · 126 E2E cases
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run python -m unittest discover -s tests/unit -v
+      - run: uv run ruff check .
+      - name: Check upstream releases
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: uv run python -m ci.watch_upstream
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - run: uv run python -m ci.fetch_sources
+      - name: Build and audit seven wheels
+        run: uv run python -m ci.build_wheels --platform linux
+      - name: Test real MySQL, Django, WSGI, ASGI and Celery
+        run: uv run python -m ci.run_e2e
+      - name: Consolidate results
+        if: always()
+        run: |
+          uv run python -m ci.report
+          cat reports/summary.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -f reports/upstream.md ]; then cat reports/upstream.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: reports-linux
+          path: reports/
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: tested-linux
+          path: |
+            wheelhouse/*.whl
+            release/*
+          if-no-files-found: error
+
+  macos:
+    name: macOS ARM64 · 7 wheels · 74 E2E cases
+    runs-on: macos-15
+    timeout-minutes: 120
+    env:
+      MCS_PLATFORM: macos
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.2
+        with:
+          version: '0.13.5'
+          python-version: '3.12'
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run python -m ci.fetch_sources
+      - name: Build and audit seven ARM64 wheels
+        run: uv run python -m ci.build_wheels --platform macos
+      - name: Install test services
+        run: |
+          brew update
+          brew install mysql@8.0 mysql@8.4 redis
+          brew upgrade mysql@8.0 mysql@8.4
+      - name: Test native MySQL, Django, WSGI, ASGI and Celery
+        run: uv run python -m ci.run_macos
+      - name: Consolidate results
+        if: always()
+        run: |
+          uv run python -m ci.report
+          cat reports/summary.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
+        with:
+          name: reports-macos
+          path: reports/
+      - uses: actions/upload-artifact@v7.0.2
+        with:
+          name: tested-macos
+          path: |
+            wheelhouse/*.whl
+            release/*
+          if-no-files-found: error

@@ -1,0 +1,7 @@
+.git
+.work
+reports
+release
+__pycache__
+**/__pycache__
+*.zip

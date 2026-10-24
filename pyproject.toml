@@ -1,0 +1,35 @@
+[project]
+name = "mysqlclient-static-ci"
+version = "0.1.0"
+description = "Build and verify self-contained mysqlclient wheels"
+requires-python = ">=3.12"
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+  "cibuildwheel==4.3.4",
+  "delocate==0.13.0; sys_platform == 'darwin'",
+  "pyyaml==6.0.3",
+  "ruff==0.17.2",
+  "twine==7.0.0",
+]
+
+[tool.cibuildwheel]
+build = ["cp3{9,10,11,12,13,14,14t}-manylinux_x86_64", "cp3{9,10,11,12,13,14,14t}-macosx_arm64"]
+build-frontend = "build[uv]"
+test-command = "python -c \"import MySQLdb; print(MySQLdb.version_info, MySQLdb._mysql.get_client_info())\""
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64"]
+
+[tool.cibuildwheel.macos]
+archs = ["arm64"]
+environment = { MACOSX_DEPLOYMENT_TARGET = "11.0" }
+
+[tool.ruff]
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["F821", "F822", "F823", "E9"]

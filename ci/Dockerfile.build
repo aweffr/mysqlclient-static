@@ -1,0 +1,8 @@
+ARG BASE
+FROM ${BASE}
+RUN dnf install -y perl-core && dnf clean all
+COPY sources/ /build/.work/sources/
+COPY build_native.sh /build/ci/build_native.sh
+COPY exports.map /build/ci/exports.map
+WORKDIR /build
+RUN bash ci/build_native.sh

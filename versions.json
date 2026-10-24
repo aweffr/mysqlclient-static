@@ -1,0 +1,153 @@
+{
+  "schema": 1,
+  "verified_on": "2026-10-24",
+  "distribution": "mysqlclient-static",
+  "build_revision": 3,
+  "platform": "manylinux_2_28_x86_64",
+  "build_image": "quay.io/pypa/manylinux_2_28_x86_64:latest",
+  "python": [
+    "3.9",
+    "3.10",
+    "3.11",
+    "3.12",
+    "3.13",
+    "3.14",
+    "3.14t"
+  ],
+  "upstream": {
+    "legacy": {
+      "version": "2.2.7",
+      "python": [
+        "3.9"
+      ],
+      "sha256": "24ae22b59416d5fcce7e99c9d37548350b4565baac82f95e149cac6ce4163845"
+    },
+    "current": {
+      "version": "2.3.0",
+      "python": [
+        "3.10",
+        "3.11",
+        "3.12",
+        "3.13",
+        "3.14",
+        "3.14t"
+      ],
+      "sha256": "bea8294964266f6486f1ca514ccfcdbc54d4fe0d32882b38c1d4594df870be8b"
+    }
+  },
+  "native": {
+    "openssl": {
+      "repository": "openssl/openssl",
+      "tag": "openssl-3.5.9",
+      "git_object": "d0ca66a1abe52545f14eca635c648932fcde5615",
+      "version": "3.5.9"
+    },
+    "zlib": {
+      "repository": "madler/zlib",
+      "tag": "v1.3.2",
+      "git_object": "216c70c020aa53f0c40920d155f808b6b59c9acb",
+      "version": "1.3.2"
+    },
+    "zstd": {
+      "repository": "facebook/zstd",
+      "tag": "v1.5.7",
+      "git_object": "ac66b19e6bd6b83238bf008eecc1298105298532",
+      "version": "1.5.7"
+    },
+    "connector": {
+      "repository": "mariadb-corporation/mariadb-connector-c",
+      "tag": "v3.4.11",
+      "git_object": "be67a4fc1e0493913732df90e562f122bff9dfe3",
+      "version": "3.4.11"
+    }
+  },
+  "mysql": [
+    {
+      "version": "8.0.11",
+      "port": 33061
+    },
+    {
+      "version": "8.0.27",
+      "port": 33062
+    },
+    {
+      "version": "8.0.46",
+      "port": 33063
+    },
+    {
+      "version": "8.4.13",
+      "port": 33064,
+      "enable_native": true
+    }
+  ],
+  "auth": [
+    "mysql_native_password",
+    "caching_sha2_password"
+  ],
+  "django": [
+    {
+      "id": "django32-py39",
+      "python": "3.9",
+      "version": "3.2.25",
+      "min_mysql": "5.7.0",
+      "runtime": false
+    },
+    {
+      "id": "django32-py310",
+      "python": "3.10",
+      "version": "3.2.25",
+      "min_mysql": "5.7.0",
+      "runtime": true
+    },
+    {
+      "id": "django42-py312",
+      "python": "3.12",
+      "version": "4.2.30",
+      "min_mysql": "8.0.11",
+      "runtime": false
+    },
+    {
+      "id": "django52-py312",
+      "python": "3.12",
+      "version": "5.2.18",
+      "min_mysql": "8.0.11",
+      "runtime": true
+    },
+    {
+      "id": "django61-py312",
+      "python": "3.12",
+      "version": "6.1.2",
+      "min_mysql": "8.4.0",
+      "runtime": false
+    }
+  ],
+  "runtime_mysql": [
+    "8.0.27",
+    "8.4.13"
+  ],
+  "runtime_tools": [
+    "gunicorn==23.0.0",
+    "uvicorn==0.35.0",
+    "celery[redis]==5.5.3",
+    "redis==5.2.1"
+  ],
+  "crypto_tool": "cryptography==46.0.3",
+  "redis_image": "redis:7.4-bookworm",
+  "distros": [
+    {
+      "id": "ubuntu22",
+      "image": "ubuntu:22.04",
+      "python": "3.10"
+    },
+    {
+      "id": "rocky8",
+      "image": "rockylinux:8",
+      "python": "3.9"
+    }
+  ],
+  "macos_platform": "macosx_11_0_arm64",
+  "macos_mysql": [
+    "8.0.46",
+    "8.4.13"
+  ]
+}

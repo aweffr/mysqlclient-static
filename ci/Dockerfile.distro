@@ -1,0 +1,20 @@
+ARG BASE=ubuntu:22.04
+FROM ${BASE}
+ARG DISTRO
+ARG WHEEL
+ARG CRYPTOGRAPHY=cryptography==46.0.3
+RUN if [ "$DISTRO" = "rocky8" ]; then \
+        dnf -y install python39 python39-pip ca-certificates && dnf clean all && \
+        ln -s /usr/bin/python3.9 /usr/local/bin/python; \
+    else \
+        apt-get update && apt-get install -y --no-install-recommends python3 python3-pip ca-certificates && \
+        rm -rf /var/lib/apt/lists/* && ln -s /usr/bin/python3 /usr/local/bin/python; \
+    fi
+COPY wheelhouse/ /tmp/wheels/
+RUN python -m pip install --no-cache-dir pip==25.2 \
+    && python -m pip install --no-cache-dir --only-binary=:all: "/tmp/wheels/${WHEEL}" "${CRYPTOGRAPHY}" \
+    && python -m pip check && rm -rf /tmp/wheels \
+    && ! command -v gcc && ! command -v mysql
+ENV PYTHONUNBUFFERED=1 PYTHONFAULTHANDLER=1 PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONPATH=/repo/tests/app:/repo DJANGO_SETTINGS_MODULE=webapp.settings
+WORKDIR /repo/tests/app

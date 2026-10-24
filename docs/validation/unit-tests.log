@@ -1,0 +1,49 @@
+test_absolute (test_project.ArchiveTests.test_absolute) ... ok
+test_escaping_symlink (test_project.ArchiveTests.test_escaping_symlink) ... ok
+test_regular_file (test_project.ArchiveTests.test_regular_file) ... ok
+test_safe_relative_symlink (test_project.ArchiveTests.test_safe_relative_symlink) ... ok
+test_traversal (test_project.ArchiveTests.test_traversal) ... ok
+test_compression_explicitly_enabled (test_project.ClientOptionTests.test_compression_explicitly_enabled) ... ok
+test_default_does_not_accidentally_enable_compression (test_project.ClientOptionTests.test_default_does_not_accidentally_enable_compression) ... ok
+test_tls_identity_required (test_project.ClientOptionTests.test_tls_identity_required) ... ok
+test_clean (test_project.ElfTests.test_clean) ... ok
+test_exports (test_project.ElfTests.test_exports) ... ok
+test_external_openssl (test_project.ElfTests.test_external_openssl) ... ok
+test_gcc_weak_hooks (test_project.ElfTests.test_gcc_weak_hooks) ... ok
+test_no_initializer (test_project.ElfTests.test_no_initializer) ... ok
+test_runpath (test_project.ElfTests.test_runpath) ... ok
+test_system_client (test_project.ElfTests.test_system_client) ... ok
+test_unreviewed_symbol (test_project.ElfTests.test_unreviewed_symbol) ... ok
+test_weak_zstd (test_project.ElfTests.test_weak_zstd) ... ok
+test_wrong_glibc (test_project.ElfTests.test_wrong_glibc) ... ok
+test_abi_count (test_project.MatrixTests.test_abi_count) ... ok
+test_current_branch (test_project.MatrixTests.test_current_branch) ... ok
+test_django32_not_python312 (test_project.MatrixTests.test_django32_not_python312) ... ok
+test_django61_explicit_exclusions (test_project.MatrixTests.test_django61_explicit_exclusions) ... ok
+test_driver_all_axes (test_project.MatrixTests.test_driver_all_axes) ... ok
+test_expected_totals (test_project.MatrixTests.test_expected_totals) ... ok
+test_legacy_branch (test_project.MatrixTests.test_legacy_branch) ... ok
+test_mysql_versions (test_project.MatrixTests.test_mysql_versions) ... ok
+test_python_versions (test_project.MatrixTests.test_python_versions) ... ok
+test_required_orm (test_project.MatrixTests.test_required_orm) ... ok
+test_source_pins (test_project.MatrixTests.test_source_pins) ... ok
+test_three_real_runtime_suites (test_project.MatrixTests.test_three_real_runtime_suites) ... ok
+test_two_auth_plugins (test_project.MatrixTests.test_two_auth_plugins) ... ok
+test_unique_ports (test_project.MatrixTests.test_unique_ports) ... ok
+test_unknown_python_fails (test_project.MatrixTests.test_unknown_python_fails) ... ok
+test_wheel_requires_exact_match (test_project.MatrixTests.test_wheel_requires_exact_match) ... ok
+test_legacy_package_metadata (test_project.PackagingTests.test_legacy_package_metadata) ... ok
+test_preserves_upstream_license (test_project.PackagingTests.test_preserves_upstream_license) ... ok
+test_runtime_version_not_spoofed (test_project.PackagingTests.test_runtime_version_not_spoofed) ... ok
+test_duplicate_rows_fail (test_project.ReportTests.test_duplicate_rows_fail) ... ok
+test_empty_never_green (test_project.ReportTests.test_empty_never_green) ... ok
+test_html_escaped (test_project.ReportTests.test_html_escaped) ... ok
+test_not_run_fails (test_project.ReportTests.test_not_run_fails) ... ok
+test_pass_requires_all_planned_cases (test_project.ReportTests.test_pass_requires_all_planned_cases) ... ok
+test_skipping_required_case_fails (test_project.ReportTests.test_skipping_required_case_fails) ... ok
+test_truncated_all_pass_still_fails (test_project.ReportTests.test_truncated_all_pass_still_fails) ... ok
+
+----------------------------------------------------------------------
+Ran 44 tests in 0.049s
+
+OK

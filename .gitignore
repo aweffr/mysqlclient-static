@@ -1,0 +1,11 @@
+.work/
+wheelhouse/
+reports/
+release/
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+.env

@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-24",
+  "environment": {
+    "python": "3.13.5",
+    "system": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "docker_available": false
+  },
+  "checks": {
+    "unit_tests": {
+      "status": "PASS",
+      "count": 44
+    },
+    "python_syntax": {
+      "status": "PASS",
+      "files": 28,
+      "grammar": "3.9"
+    },
+    "shell_syntax": {
+      "status": "PASS",
+      "files": 3
+    },
+    "workflow_yaml_structure": {
+      "status": "PASS",
+      "tool": "PyYAML BaseLoader; not GitHub runner execution"
+    },
+    "local_full_mysqlclient_packaging": {
+      "status": "PASS",
+      "upstream": "2.3.0",
+      "python": "3.13.5",
+      "native_libraries": "preinstalled Debian 13 static archives; not project-pinned native sources"
+    },
+    "local_distribution_metadata_and_import": {
+      "status": "PASS",
+      "distribution": "mysqlclient-static",
+      "version": "2.3.0.post1"
+    },
+    "local_export_allowlist": {
+      "status": "PASS",
+      "exports": [
+        "PyInit__mysql"
+      ]
+    },
+    "local_release_audit_negative_control": {
+      "status": "PASS",
+      "expected_rejection": [
+        "GLIBC_2.38 exceeds 2.28",
+        "four unresolved ZSTD_trace weak symbols"
+      ]
+    },
+    "pinned_manylinux_native_build": {
+      "status": "NOT_RUN",
+      "reason": "Docker and outbound source-download network unavailable in delivery environment"
+    },
+    "all_six_release_wheels": {
+      "status": "NOT_RUN"
+    },
+    "real_mysql_django_http_celery_e2e": {
+      "status": "NOT_RUN",
+      "required_cases": 118,
+      "version_exclusions": 6
+    }
+  }
+}
