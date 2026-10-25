@@ -18,16 +18,7 @@ uv add mysqlclient-static
 With pip:
 
 ```bash
-python -m pip install --only-binary=:all: mysqlclient-static
-```
-
-For offline installation, download the wheel matching your Python version and
-platform from [GitHub Releases](https://github.com/aweffr/mysqlclient-static/releases).
-For example, with CPython 3.12 on macOS ARM64:
-
-```bash
-python -m pip install --no-index \
-  ./mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
+python -m pip install mysqlclient-static
 ```
 
 ### Replacing mysqlclient
@@ -36,55 +27,28 @@ Both distributions provide `MySQLdb`. Keep one in your application dependencies:
 
 ```bash
 python -m pip uninstall -y mysqlclient
-python -m pip install --only-binary=:all: mysqlclient-static
+python -m pip install mysqlclient-static
 ```
 
 A dependency declared as `mysqlclient` still needs to be handled in your
 application's dependency configuration; installing `mysqlclient-static` does
 not satisfy that distribution name.
 
-## Supported versions
+## Supported environments
 
-| Python | Upstream mysqlclient | Distribution version | Platforms |
-|---|---|---|---|
-| CPython 3.9 | 2.2.7 | 2.2.7.post3 | Linux AMD64, macOS ARM64 |
-| CPython 3.10–3.14 | 2.3.0 | 2.3.0.post3 | Linux AMD64, macOS ARM64 |
-| CPython 3.14t (free-threaded) | 2.3.0 | 2.3.0.post3 | Linux AMD64, macOS ARM64 |
+- Linux AMD64 (x86-64), glibc 2.28 or later.
+- macOS ARM64 (Apple Silicon), macOS 11 or later.
 
-Linux wheels use the `manylinux_2_28_x86_64` baseline. macOS wheels target
-`macosx_11_0_arm64` (macOS 11 or later). Python 3.14t uses a separate
-`cp314-cp314t` wheel. Each concurrent thread needs its own connection.
+pip and uv automatically select the wheel (prebuilt package) matching your
+Python version and platform.
 
-The wheels contain MariaDB Connector/C 3.4.11, OpenSSL 3.5.9, zlib 1.3.2 and
-zstd 1.5.7. Linux uses the system glibc; macOS uses its system libraries.
+| Python | mysqlclient version | Package version |
+|---|---|---|
+| CPython 3.9 | 2.2.7 | 2.2.7.post3 |
+| CPython 3.10–3.14 | 2.3.0 | 2.3.0.post3 |
+| CPython 3.14t (free-threaded) | 2.3.0 | 2.3.0.post3 |
 
-## Version numbers and wheel names
-
-The distribution version is the upstream mysqlclient version followed by this
-project's packaging revision: `2.3.0.post3` means mysqlclient 2.3.0, packaging
-revision 3. Updates to the bundled libraries or packaging increase `.postN`;
-an upstream update starts a new version line, such as `2.3.1.post1`.
-
-Python and platform compatibility are recorded in the wheel filename:
-
-```text
-mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
-```
-
-| Part | Meaning |
-|---|---|
-| `2.3.0.post3` | Upstream version and packaging revision |
-| First `cp312` | CPython 3.12 |
-| Second `cp312` | CPython 3.12 application binary interface (ABI) |
-| `macosx_11_0_arm64` | macOS 11 or later, ARM64 |
-
-Each GitHub Release groups all wheels for one distribution version under a tag
-such as `v2.3.0.post3`. That version has 12 wheels: six Python variants across
-two platforms. `v2.2.7.post3` has two wheels for Python 3.9. PyPI and GitHub
-Releases distribute the same files.
-
-MySQL Server versions such as 8.0.46 and 8.4.13 describe database compatibility;
-they are separate from the Python driver's version.
+`2.3.0.post3` means mysqlclient 2.3.0, packaging revision 3.
 
 ## Typical usage
 
@@ -110,6 +74,7 @@ with MySQLdb.connect(
 Use `%s` placeholders and pass values separately. Commit writes explicitly with
 `commit()` and call `rollback()` on failure. A connection's `with` block closes
 the connection; it does not commit the transaction automatically.
+Each concurrent thread needs its own connection.
 
 ### SQLAlchemy
 
@@ -151,32 +116,26 @@ engine.dispose()
 The same engine works with SQLAlchemy ORM `Session`. Use `engine.begin()`
 for a block that commits writes on success and rolls back on an exception.
 
-## Coding agents and examples
+## Offline installation
 
-Every wheel includes these files:
+For offline installation, download the wheel matching your Python version and
+platform from [GitHub Releases](https://github.com/aweffr/mysqlclient-static/releases).
+For example, with CPython 3.12 on macOS ARM64:
 
-| Installed path | Contents |
-|---|---|
-| `MySQLdb/README.md` | English installation guide and typical usage |
-| `MySQLdb/README_CN.md` | The same guide in Simplified Chinese |
-| `MySQLdb/AGENTS.md` | API, transactions, connection lifecycle and integration |
-| `MySQLdb/api-symbols.json` | Signatures, docstrings and symbols from the upstream source |
-| `MySQLdb/examples/` | Connection, transaction, Django settings and Celery task examples |
-
-```python
-from importlib.resources import files
-
-print(files("MySQLdb").joinpath("README.md").read_text())
-print(files("MySQLdb").joinpath("api-symbols.json"))
+```bash
+python -m pip install ./mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
 ```
 
-The [agent guide](https://github.com/aweffr/mysqlclient-static/blob/master/docs/agent-guide.md)
-and `examples/` are maintained with the package. Each upstream version gets its
-own symbol index.
+## Further reading
 
-Compatibility baselines, bundled-library choices, and instructions for
-building, testing and publishing are in
-[docs/development.md](https://github.com/aweffr/mysqlclient-static/blob/master/docs/development.md).
+Each wheel includes both READMEs, `MySQLdb/AGENTS.md`, the API symbol index
+`MySQLdb/api-symbols.json`, and examples in `MySQLdb/examples/`.
+
+- [Agent guide](https://github.com/aweffr/mysqlclient-static/blob/master/docs/agent-guide.md):
+  API, transactions, connection lifecycle, and Django and Celery integration.
+- [Developer guide](https://github.com/aweffr/mysqlclient-static/blob/master/docs/development.md):
+  bundled library versions, compatibility baselines, building, testing and
+  publishing.
 
 ## License and source
 

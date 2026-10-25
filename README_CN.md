@@ -18,16 +18,7 @@ uv add mysqlclient-static
 使用 pip：
 
 ```bash
-python -m pip install --only-binary=:all: mysqlclient-static
-```
-
-离线安装时，从 [GitHub Releases](https://github.com/aweffr/mysqlclient-static/releases)
-下载与 Python 版本和平台匹配的 wheel。例如，在 macOS ARM64 的 CPython 3.12
-环境中运行：
-
-```bash
-python -m pip install --no-index \
-  ./mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
+python -m pip install mysqlclient-static
 ```
 
 ### 替换 mysqlclient
@@ -36,54 +27,26 @@ python -m pip install --no-index \
 
 ```bash
 python -m pip uninstall -y mysqlclient
-python -m pip install --only-binary=:all: mysqlclient-static
+python -m pip install mysqlclient-static
 ```
 
 如果其他依赖声明了 `mysqlclient`，仍需在应用的依赖配置中处理这一要求；
 安装 `mysqlclient-static` 不会自动满足这个分发包名。
 
-## 支持版本
+## 支持的环境
 
-| Python | 上游 mysqlclient | 分发版本 | 平台 |
-|---|---|---|---|
-| CPython 3.9 | 2.2.7 | 2.2.7.post3 | Linux AMD64、macOS ARM64 |
-| CPython 3.10–3.14 | 2.3.0 | 2.3.0.post3 | Linux AMD64、macOS ARM64 |
-| CPython 3.14t（自由线程版） | 2.3.0 | 2.3.0.post3 | Linux AMD64、macOS ARM64 |
+- Linux AMD64（x86-64），glibc 2.28 及以上。
+- macOS ARM64（Apple Silicon），macOS 11 及以上。
 
-Linux wheel 的基线为 `manylinux_2_28_x86_64`。
-macOS wheel 的目标为 `macosx_11_0_arm64`，支持 macOS 11 及以上系统。
-Python 3.14t 使用单独的 `cp314-cp314t` wheel；每个并发线程各用一个连接。
+pip 和 uv 会自动选择匹配当前 Python 和平台的 wheel（预编译安装包）。
 
-wheel 内置 MariaDB Connector/C 3.4.11、OpenSSL 3.5.9、zlib 1.3.2 和
-zstd 1.5.7。Linux 使用系统 glibc，macOS 使用系统库。
+| Python | mysqlclient 版本 | 安装包版本 |
+|---|---|---|
+| CPython 3.9 | 2.2.7 | 2.2.7.post3 |
+| CPython 3.10–3.14 | 2.3.0 | 2.3.0.post3 |
+| CPython 3.14t（自由线程版） | 2.3.0 | 2.3.0.post3 |
 
-## 版本号与 wheel 文件名
-
-分发版本由上游 mysqlclient 版本和本项目的打包修订号组成。
 `2.3.0.post3` 表示 mysqlclient 2.3.0 的第 3 次打包修订。
-更新内置库或打包方式时递增 `.postN`；上游升级时开启新的版本线，
-例如 `2.3.1.post1`。
-
-Python 和平台兼容性写在 wheel 文件名中：
-
-```text
-mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
-```
-
-| 部分 | 含义 |
-|---|---|
-| `2.3.0.post3` | 上游版本与打包修订号 |
-| 第一个 `cp312` | CPython 3.12 |
-| 第二个 `cp312` | CPython 3.12 的应用二进制接口（ABI） |
-| `macosx_11_0_arm64` | macOS 11 及以上系统，ARM64 |
-
-每个 GitHub Release 按分发版本归档，例如 `v2.3.0.post3`。
-该版本包含 12 个 wheel，覆盖 6 个 Python 变体和两个平台。
-`v2.2.7.post3` 包含 Python 3.9 的两个平台构件。
-PyPI 与 GitHub Releases 提供相同的文件。
-
-MySQL Server 的 8.0.46、8.4.13 等版本描述数据库兼容范围，
-与 Python 驱动的版本号分别管理。
 
 ## 典型用法
 
@@ -108,7 +71,7 @@ with MySQLdb.connect(
 
 SQL 参数使用 `%s`，值单独传入。写操作需要显式调用 `commit()`，
 异常时调用 `rollback()`。连接的 `with` 语句负责关闭连接，
-不会自动提交事务。
+不会自动提交事务。每个并发线程各用一个连接。
 
 ### SQLAlchemy
 
@@ -150,30 +113,23 @@ engine.dispose()
 同一个 engine 也可用于 SQLAlchemy ORM 的 `Session`。写操作可以放在
 `engine.begin()` 代码块中，成功时提交，异常时回滚。
 
-## 编程 agent 与示例
+## 离线安装
 
-每个 wheel 都包含以下文件：
+离线安装时，从 [GitHub Releases](https://github.com/aweffr/mysqlclient-static/releases)
+下载与 Python 版本和平台匹配的 wheel。例如，在 macOS ARM64 的 CPython 3.12
+环境中运行：
 
-| 安装路径 | 内容 |
-|---|---|
-| `MySQLdb/README.md` | 英文安装说明与典型用法 |
-| `MySQLdb/README_CN.md` | 内容对应的简体中文说明 |
-| `MySQLdb/AGENTS.md` | API、事务、连接生命周期与集成说明 |
-| `MySQLdb/api-symbols.json` | 从上游源码生成的签名、文档字符串和符号索引 |
-| `MySQLdb/examples/` | 连接、事务、Django settings 和 Celery task 示例 |
-
-```python
-from importlib.resources import files
-
-print(files("MySQLdb").joinpath("README.md").read_text())
-print(files("MySQLdb").joinpath("api-symbols.json"))
+```bash
+python -m pip install ./mysqlclient_static-2.3.0.post3-cp312-cp312-macosx_11_0_arm64.whl
 ```
 
-[agent 使用说明](https://github.com/aweffr/mysqlclient-static/blob/master/docs/agent-guide.md)
-和 `examples/` 与包一起维护，每条上游版本线独立生成符号索引。
+## 更多资料
 
-兼容基线、内置库选型，以及面向开发者的构建、测试和发布说明见
-[docs/development.md](https://github.com/aweffr/mysqlclient-static/blob/master/docs/development.md)。
+wheel 内附中英文 README、`MySQLdb/AGENTS.md`、API 符号索引
+`MySQLdb/api-symbols.json` 和 `MySQLdb/examples/` 中的示例。
+
+- [agent 使用说明](https://github.com/aweffr/mysqlclient-static/blob/master/docs/agent-guide.md)：API、事务、连接生命周期，以及 Django 和 Celery 集成。
+- [开发说明](https://github.com/aweffr/mysqlclient-static/blob/master/docs/development.md)：内置库版本、兼容基线、构建、测试和发布。
 
 ## 许可证与源码
 
