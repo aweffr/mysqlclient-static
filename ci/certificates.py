@@ -5,7 +5,12 @@ from ci.common import run
 def create(directory):
     p = Path(directory)
     p.mkdir(parents=True, exist_ok=True)
-    run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-sha256", "-days", "2",
+    config = p / "req.cnf"
+    config.write_text("[req]\ndistinguished_name=dn\n[dn]\n")
+    # OpenSSL 1.1.1 appends -addext to extensions from the default config.
+    # Inheriting v3_ca duplicates basicConstraints and subjectKeyIdentifier,
+    # producing a CA that newer OpenSSL consumers reject as invalid.
+    run(["openssl", "req", "-config", config, "-x509", "-newkey", "rsa:2048", "-nodes", "-sha256", "-days", "2",
          "-subj", "/CN=mysqlclient-static-test-CA", "-keyout", p / "ca.key", "-out", p / "ca.pem",
          "-addext", "basicConstraints=critical,CA:TRUE",
          "-addext", "keyUsage=critical,keyCertSign,cRLSign",
@@ -18,6 +23,9 @@ def create(directory):
     run(["openssl", "x509", "-req", "-sha256", "-days", "2", "-in", p / "server.csr",
          "-CA", p / "ca.pem", "-CAkey", p / "ca.key", "-CAcreateserial", "-extfile", p / "server.ext",
          "-out", p / "server.pem"])
+    # Stop before starting services if the generated trust chain is invalid.
+    run(["openssl", "verify", "-x509_strict", "-purpose", "sslserver", "-CAfile", p / "ca.pem",
+         p / "server.pem"])
     run(["openssl", "req", "-x509", "-newkey", "rsa:2048", "-nodes", "-sha256", "-days", "2",
          "-subj", "/CN=wrong-test-CA", "-keyout", p / "wrong-ca.key", "-out", p / "wrong-ca.pem"])
     # Generated fixtures only; MySQL containers run under different numeric UIDs.
